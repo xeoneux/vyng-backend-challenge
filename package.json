@@ -23,6 +23,7 @@
     "@nestjs/common": "^5.3.9",
     "@nestjs/core": "^5.3.10",
     "@nestjs/microservices": "^5.3.8",
+    "@nestjs/swagger": "^2.5.1",
     "@nestjs/testing": "^5.3.8",
     "@nestjs/typeorm": "^5.2.2",
     "@nestjs/websockets": "^5.3.8",

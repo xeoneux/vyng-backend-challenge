@@ -1,12 +1,6 @@
-import { Module } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 
-@Module({
-  controllers: [],
-  imports: [],
-  providers: []
-})
-class AppModule {}
+import { AppModule } from "./app/app.module";
 
 (async () => {
   const app = await NestFactory.create(AppModule);

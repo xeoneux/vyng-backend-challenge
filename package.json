@@ -4,6 +4,8 @@
   "description": "Vyng Backend Challenge =",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
+    "start": "ts-node src/main",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -22,9 +24,12 @@
     "@nestjs/core": "^5.3.10",
     "@nestjs/microservices": "^5.3.8",
     "@nestjs/testing": "^5.3.8",
+    "@nestjs/typeorm": "^5.2.2",
     "@nestjs/websockets": "^5.3.8",
+    "pg": "^7.5.0",
     "reflect-metadata": "^0.1.12",
     "rxjs": "^6.3.3",
+    "typeorm": "^0.2.7",
     "typescript": "^3.1.1"
   },
   "devDependencies": {

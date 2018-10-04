@@ -1,6 +1,13 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn
+} from "typeorm";
 
 import { User } from "./user.entity";
+import { Video } from "./video.entity";
 
 @Entity()
 export class Channel {
@@ -12,4 +19,7 @@ export class Channel {
 
   @ManyToOne(_ => User, user => user.channels)
   public user: User;
+
+  @OneToMany(_ => Video, video => video.channel)
+  public videos: Video[];
 }

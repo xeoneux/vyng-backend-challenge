@@ -2,6 +2,7 @@ import { Body, Controller, Param, Post } from "@nestjs/common";
 
 import { ChannelCreateDto } from "./dto/channel-create.dto";
 import { UserGenerateDto } from "./dto/user-generate.dto";
+import { VideoAddDto } from "./dto/video-add.dto";
 import { UserService } from "./user.service";
 
 @Controller("users")
@@ -19,5 +20,14 @@ export class UserController {
     @Body() channelCreateDto: ChannelCreateDto
   ) {
     return this.userService.makeChannelForUser(+id, channelCreateDto);
+  }
+
+  @Post(":uid/channels/:cid/video")
+  public async addVideo(
+    @Param("uid") uid: string,
+    @Param("cid") cid: string,
+    @Body() videoAddDto: VideoAddDto
+  ) {
+    return this.userService.addVideoToChannel(+uid, +cid, videoAddDto);
   }
 }

@@ -74,3 +74,4 @@ typings/
 
 # Output directory
 dist
+build

@@ -1,14 +1,36 @@
+@import "slick-carousel/slick/slick.css";
+@import "slick-carousel/slick/slick-theme.css";
+
 #app {
+  height: 90vh;
   display: flex;
 }
 
 .left-container {
-  height: 90vh;
   min-width: 15%;
+  overflow: scroll;
+}
+
+.right-container {
+  min-width: 85%;
   overflow: scroll;
 }
 
 .bx--modal-container {
   height: 25%;
   min-width: 100%;
+}
+
+.selection-info {
+  height: 100%;
+  display: flex;
+  min-width: 85%;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+}
+
+.slider-component {
+  width: 135px;
+  height: 240px;
 }

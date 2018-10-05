@@ -52,4 +52,8 @@ export class UserService {
     const newUser = await this.userRepository.create(userGenerateDto);
     return this.userRepository.save(newUser);
   }
+
+  public async fetchAllUsers() {
+    return this.userRepository.find();
+  }
 }

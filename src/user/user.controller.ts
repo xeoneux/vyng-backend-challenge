@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post } from "@nestjs/common";
 
 import { ChannelCreateDto } from "./dto/channel-create.dto";
 import { UserGenerateDto } from "./dto/user-generate.dto";
@@ -8,6 +8,11 @@ import { UserService } from "./user.service";
 @Controller("users")
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @Get()
+  public async listAllUsers() {
+    return this.userService.fetchAllUsers();
+  }
 
   @Post()
   public async generateUser(@Body() userGenerateDto: UserGenerateDto) {

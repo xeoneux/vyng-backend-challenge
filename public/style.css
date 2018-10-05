@@ -1,0 +1,14 @@
+#app {
+  display: flex;
+}
+
+.left-container {
+  height: 90vh;
+  min-width: 15%;
+  overflow: scroll;
+}
+
+.bx--modal-container {
+  height: 25%;
+  min-width: 100%;
+}

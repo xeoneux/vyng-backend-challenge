@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  BadRequestException
+} from "@nestjs/common";
 
 import { ChannelCreateDto } from "./dto/channel-create.dto";
 import { UserGenerateDto } from "./dto/user-generate.dto";
@@ -12,6 +20,17 @@ export class UserController {
   @Get()
   public async listAllUsers() {
     return this.userService.fetchAllUsers();
+  }
+
+  @Get(":id/channels")
+  public async fetchChannelData(
+    @Param("id") id: string,
+    @Query("includeVideos") includeVideos: string
+  ) {
+    if (id) {
+      return this.userService.fetchAChannelData(+id, +includeVideos === 1);
+    }
+    throw new BadRequestException("Please provide a user id");
   }
 
   @Post()

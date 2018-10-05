@@ -9,6 +9,7 @@ import {
   Footer,
   ModalBody,
   ModalHeader,
+  ModalWrapper,
   RadioTile,
   TextInput,
   TileGroup
@@ -34,17 +35,40 @@ class App extends React.Component {
     this.state = {
       usersData: [],
       newUserName: "",
+      channelsData: [],
       selectedUser: null,
+      newChannelName: "",
       generateUserLoading: false
     };
 
+    this.handleChannelInput = this.handleChannelInput.bind(this);
     this.handleGenerateUser = this.handleGenerateUser.bind(this);
     this.handleGenerateInput = this.handleGenerateInput.bind(this);
+    this.handleCreateChannel = this.handleCreateChannel.bind(this);
     this.handleUserSelection = this.handleUserSelection.bind(this);
   }
 
   handleUserSelection(userId) {
     this.setState({ selectedUser: userId });
+    axios.get(`users/${userId}/channels?includeVideos=1`).then(res => {
+      this.setState({ channelsData: res.data });
+    });
+  }
+
+  handleCreateChannel() {
+    if (this.state.newChannelName) {
+      axios
+        .post(`users/${this.state.selectedUser}/channels?include-videos=true`, {
+          name: this.state.newChannelName
+        })
+        .then(res => {
+          this.setState({
+            channelsData: [res.data, ...this.state.channelsData]
+          });
+        });
+    } else {
+      // TODO: Display notification...
+    }
   }
 
   handleGenerateInput(event) {
@@ -65,6 +89,10 @@ class App extends React.Component {
           generateUserLoading: false
         });
       });
+  }
+
+  handleChannelInput(event) {
+    this.setState({ newChannelName: event.target.value });
   }
 
   componentDidMount() {
@@ -102,55 +130,80 @@ class App extends React.Component {
 
         <div className="right-container">
           {this.state.selectedUser ? (
-            <div class="bx--modal-container">
-              <ModalHeader title="Example" />
-              <ModalBody>
-                <Slider {...settings}>
-                  <div className="slider-component">
-                    <ReactPlayer
-                      width="320px"
-                      height="180px"
-                      url="https://www.youtube.com/watch?v=ysz5S6PUM-U"
-                    />
-                  </div>
-                  <div className="slider-component">
-                    <ReactPlayer
-                      width="320px"
-                      height="180px"
-                      url="https://www.youtube.com/watch?v=ysz5S6PUM-U"
-                    />
-                  </div>
-                  <div className="slider-component">
-                    <TextInput
-                      hideLabel
-                      labelText="Generate User"
-                      id="generate-button-input"
-                      value={this.state.newUserName}
-                      onChange={this.handleGenerateInput}
-                      placeholder="Enter a Name for a New User"
-                    />
+            this.state.channelsData && this.state.channelsData.length ? (
+              this.state.channelsData.map(channelData => (
+                <div key={channelData.id} class="bx--modal-container">
+                  <ModalHeader title={channelData.name} />
+                  <ModalBody className="video-display">
+                    <Slider className="slider-videos" {...settings}>
+                      <div className="slider-component">
+                        <ReactPlayer
+                          width="320px"
+                          height="180px"
+                          url="https://www.youtube.com/watch?v=ysz5S6PUM-U"
+                        />
+                      </div>
+                      <div className="slider-component">
+                        <ReactPlayer
+                          width="320px"
+                          height="180px"
+                          url="https://www.youtube.com/watch?v=ysz5S6PUM-U"
+                        />
+                      </div>
+                    </Slider>
+                    <div className="slider-input">
+                      <TextInput
+                        hideLabel
+                        labelText="Generate User"
+                        id="generate-button-input"
+                        value={this.state.newUserName}
+                        onChange={this.handleGenerateInput}
+                        placeholder="Enter a Name for a New User"
+                      />
 
-                    <Button
-                      onClick={this.handleGenerateUser}
-                      disabled={this.state.generateUserLoading}
-                      kind={this.state.newUserName ? "secondary" : "primary"}
-                    >
-                      {this.state.newUserName
-                        ? "Generate New User"
-                        : "Generate Random User"}
-                    </Button>
-                  </div>
-                </Slider>
-              </ModalBody>
-            </div>
+                      <Button
+                        onClick={this.handleGenerateUser}
+                        disabled={this.state.generateUserLoading}
+                        kind={this.state.newUserName ? "secondary" : "primary"}
+                      >
+                        {this.state.newUserName
+                          ? "Generate New User"
+                          : "Generate Random User"}
+                      </Button>
+                    </div>
+                  </ModalBody>
+                </div>
+              ))
+            ) : (
+              <div className="selection-info bx--modal-header__heading">
+                No channels found for the user :(
+              </div>
+            )
           ) : (
             <div className="selection-info bx--modal-header__heading">
-              Please select a user from the menu on the left
+              Please select a user from the menu on the left :)
             </div>
           )}
         </div>
 
         <Footer>
+          {this.state.selectedUser && (
+            <ModalWrapper
+              shouldCloseAfterSubmit
+              modalHeading="Enter Channel Name"
+              buttonTriggerText="Create New Channel"
+              handleSubmit={this.handleCreateChannel}
+            >
+              <TextInput
+                hideLabel
+                data-modal-primary-focus
+                labelText="New Channel Name"
+                placeholder="New Channel Name"
+                value={this.state.newChannelName}
+                onChange={this.handleChannelInput}
+              />
+            </ModalWrapper>
+          )}
           <div className="bx--footer-cta">
             <div className="bx--footer-info">
               <div className="bx--footer-info__item">
@@ -167,7 +220,7 @@ class App extends React.Component {
                 <Button
                   onClick={this.handleGenerateUser}
                   disabled={this.state.generateUserLoading}
-                  kind={this.state.newUserName ? "secondary" : "primary"}
+                  kind={this.state.newUserName ? "primary" : "secondary"}
                 >
                   {this.state.newUserName
                     ? "Generate New User"

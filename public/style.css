@@ -7,8 +7,9 @@
 }
 
 .left-container {
-  min-width: 15%;
+  width: 15%;
   overflow: scroll;
+  min-width: 150px;
 }
 
 .right-container {
@@ -17,8 +18,13 @@
 }
 
 .bx--modal-container {
-  height: 25%;
+  height: 40%;
   min-width: 100%;
+  padding-top: 20px;
+}
+
+.bx--footer-info__item {
+  margin-right: 10px;
 }
 
 .selection-info {
@@ -31,6 +37,30 @@
 }
 
 .slider-component {
-  width: 135px;
-  height: 240px;
+  overflow: hidden;
+  text-align: center;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 320px !important;
+  height: 180px !important;
+  display: flex !important;
+}
+
+.video-display {
+  height: 100%;
+  display: flex;
+}
+
+.slider-videos {
+  width: 70%;
+}
+
+.slider-input {
+  width: 15vw;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-around;
 }

@@ -56,4 +56,18 @@ export class UserService {
   public async fetchAllUsers() {
     return this.userRepository.find();
   }
+
+  public async fetchAChannelData(
+    userId: number,
+    includeVidoes: boolean = false
+  ) {
+    const user = await this.userRepository.findOne({ id: userId });
+    if (user) {
+      return this.channelRepository.find({
+        relations: includeVidoes ? ["videos"] : [],
+        where: { user }
+      });
+    }
+    throw new BadRequestException("Invalid user id provided...");
+  }
 }

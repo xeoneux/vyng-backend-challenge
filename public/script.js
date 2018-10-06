@@ -2,7 +2,6 @@ import Axios from "axios";
 import React from "react";
 import { Chance } from "chance";
 import ReactDOM from "react-dom";
-import Slider from "react-slick";
 import ReactPlayer from "react-player";
 import {
   Button,
@@ -22,13 +21,6 @@ const isProd = process.env.NODE_ENV === "production";
 const urlPrefix = isProd ? "" : "http://localhost:5678";
 const axios = Axios.create({ baseURL: urlPrefix, withCredentials: true });
 
-const settings = {
-  // speed: 500,
-  // infinite: true,
-  slidesToShow: 3,
-  slidesToScroll: 1
-};
-
 class App extends React.Component {
   constructor() {
     super();
@@ -41,6 +33,7 @@ class App extends React.Component {
       generateUserLoading: false
     };
 
+    this.handleNewVideo = this.handleNewVideo.bind(this);
     this.handleChannelInput = this.handleChannelInput.bind(this);
     this.handleGenerateUser = this.handleGenerateUser.bind(this);
     this.handleGenerateInput = this.handleGenerateInput.bind(this);
@@ -95,6 +88,19 @@ class App extends React.Component {
     this.setState({ newChannelName: event.target.value });
   }
 
+  handleNewVideo(url, channel) {
+    if (url) {
+    } else {
+    }
+    axios
+      .post(`/users/${this.state.selectedUser}/channels/${channel}/videos`, {
+        url
+      })
+      .then(res => {
+        console.log(res);
+      });
+  }
+
   componentDidMount() {
     axios
       .get("/users")
@@ -135,41 +141,20 @@ class App extends React.Component {
                 <div key={channelData.id} class="bx--modal-container">
                   <ModalHeader title={channelData.name} />
                   <ModalBody className="video-display">
-                    <Slider className="slider-videos" {...settings}>
-                      <div className="slider-component">
-                        <ReactPlayer
-                          width="320px"
-                          height="180px"
-                          url="https://www.youtube.com/watch?v=ysz5S6PUM-U"
-                        />
-                      </div>
-                      <div className="slider-component">
-                        <ReactPlayer
-                          width="320px"
-                          height="180px"
-                          url="https://www.youtube.com/watch?v=ysz5S6PUM-U"
-                        />
-                      </div>
-                    </Slider>
+                    <div className="slider-videos">
+                      {channelData.videos &&
+                        channelData.videos.map(video => (
+                          <div className="slider-component">
+                            <ReactPlayer
+                              width="100$"
+                              height="100%"
+                              url={video.url}
+                            />
+                          </div>
+                        ))}
+                    </div>
                     <div className="slider-input">
-                      <TextInput
-                        hideLabel
-                        labelText="Generate User"
-                        id="generate-button-input"
-                        value={this.state.newUserName}
-                        onChange={this.handleGenerateInput}
-                        placeholder="Enter a Name for a New User"
-                      />
-
-                      <Button
-                        onClick={this.handleGenerateUser}
-                        disabled={this.state.generateUserLoading}
-                        kind={this.state.newUserName ? "secondary" : "primary"}
-                      >
-                        {this.state.newUserName
-                          ? "Generate New User"
-                          : "Generate Random User"}
-                      </Button>
+                      <NewVideo />
                     </div>
                   </ModalBody>
                 </div>
@@ -233,6 +218,57 @@ class App extends React.Component {
       </React.Fragment>
     );
   }
+}
+
+class NewVideo extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      newVideoUrl: ""
+    };
+
+    this.handleNewVideo = this.handleNewVideo.bind(this);
+    this.handleVideoInput = this.handleVideoInput.bind(this);
+  }
+
+  handleNewVideo() {
+    this.props.handleNewVideo(this.state.newVideoUrl);
+    this.setState({ newVideoUrl: "" });
+  }
+
+  handleVideoInput(event) {
+    this.setState({ newVideoUrl: event.target.value });
+  }
+
+  render() {
+    return (
+      <React.Fragment>
+        <TextInput
+          hideLabel
+          className="video-text"
+          labelText="Generate User"
+          id="generate-button-input"
+          placeholder="Enter Video URL"
+          value={this.state.newVideoUrl}
+          onChange={this.handleVideoInput}
+        />
+
+        <Button
+          onClick={this.handleNewVideo}
+          kind={this.state.newVideoUrl ? "primary" : "secondary"}
+          disabled={this.state.newVideoUrl && !isUrl(this.state.newVideoUrl)}
+        >
+          {this.state.newVideoUrl ? "Add Typed Url" : "Add Random Video"}
+        </Button>
+      </React.Fragment>
+    );
+  }
+}
+
+function isUrl(url) {
+  return url.match(
+    /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/
+  );
 }
 
 ReactDOM.render(<App />, document.getElementById("app"));

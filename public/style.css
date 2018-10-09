@@ -63,3 +63,7 @@
   text-align: center;
   margin-bottom: 10px;
 }
+
+.bx--modal-close {
+  display: none;
+}

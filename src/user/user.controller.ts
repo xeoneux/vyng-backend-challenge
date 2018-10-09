@@ -1,11 +1,11 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
   Param,
   Post,
-  Query,
-  BadRequestException
+  Query
 } from "@nestjs/common";
 
 import { ChannelCreateDto } from "./dto/channel-create.dto";
@@ -46,7 +46,7 @@ export class UserController {
     return this.userService.makeChannelForUser(+id, channelCreateDto);
   }
 
-  @Post(":uid/channels/:cid/video")
+  @Post(":uid/channels/:cid/videos")
   public async addVideo(
     @Param("uid") uid: string,
     @Param("cid") cid: string,

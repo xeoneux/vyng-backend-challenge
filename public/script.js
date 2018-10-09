@@ -6,6 +6,7 @@ import ReactPlayer from "react-player";
 import {
   Button,
   Footer,
+  Loading,
   ModalBody,
   ModalHeader,
   ModalWrapper,
@@ -50,7 +51,7 @@ class App extends React.Component {
 
   handleCreateChannel() {
     if (this.state.newChannelName) {
-      axios
+      return axios
         .post(`users/${this.state.selectedUser}/channels?include-videos=true`, {
           name: this.state.newChannelName
         })
@@ -89,15 +90,27 @@ class App extends React.Component {
   }
 
   handleNewVideo(url, channel) {
-    if (url) {
-    } else {
-    }
     axios
       .post(`/users/${this.state.selectedUser}/channels/${channel}/videos`, {
         url
       })
       .then(res => {
-        console.log(res);
+        const channelData = this.state.channelsData.find(
+          channelData => channelData.id === channel
+        );
+
+        channelData.videos = channelData.videos || [];
+
+        const newChannelData = Object.assign({}, channelData, {
+          videos: [res.data, ...channelData.videos]
+        });
+
+        this.setState({
+          channelsData: this.state.channelsData.map(
+            channelData =>
+              channelData.id === channel ? newChannelData : channelData
+          )
+        });
       });
   }
 
@@ -138,23 +151,26 @@ class App extends React.Component {
           {this.state.selectedUser ? (
             this.state.channelsData && this.state.channelsData.length ? (
               this.state.channelsData.map(channelData => (
-                <div key={channelData.id} class="bx--modal-container">
+                <div key={channelData.id} className="bx--modal-container">
                   <ModalHeader title={channelData.name} />
                   <ModalBody className="video-display">
                     <div className="slider-videos">
                       {channelData.videos &&
                         channelData.videos.map(video => (
-                          <div className="slider-component">
+                          <div key={video.id} className="slider-component">
                             <ReactPlayer
-                              width="100$"
-                              height="100%"
+                              width="90%"
+                              height="90%"
                               url={video.url}
                             />
                           </div>
                         ))}
                     </div>
                     <div className="slider-input">
-                      <NewVideo />
+                      <NewVideo
+                        channel={channelData.id}
+                        handleNewVideo={this.handleNewVideo}
+                      />
                     </div>
                   </ModalBody>
                 </div>
@@ -181,6 +197,7 @@ class App extends React.Component {
             >
               <TextInput
                 hideLabel
+                id="button-channel-name"
                 data-modal-primary-focus
                 labelText="New Channel Name"
                 placeholder="New Channel Name"
@@ -223,16 +240,22 @@ class App extends React.Component {
 class NewVideo extends React.Component {
   constructor() {
     super();
-    this.state = {
-      newVideoUrl: ""
-    };
+    this.state = { newVideoUrl: "", fetchingRandom: false };
 
     this.handleNewVideo = this.handleNewVideo.bind(this);
     this.handleVideoInput = this.handleVideoInput.bind(this);
   }
 
   handleNewVideo() {
-    this.props.handleNewVideo(this.state.newVideoUrl);
+    if (!this.state.newVideoUrl) {
+      this.setState({ fetchingRandom: true });
+      return axios.get("/random").then(res => {
+        const url = `https://www.youtube.com/watch?v=${res.data.vid}`;
+        this.props.handleNewVideo(url, this.props.channel);
+        this.setState({ fetchingRandom: false });
+      });
+    }
+    this.props.handleNewVideo(this.state.newVideoUrl, this.props.channel);
     this.setState({ newVideoUrl: "" });
   }
 
@@ -241,7 +264,9 @@ class NewVideo extends React.Component {
   }
 
   render() {
-    return (
+    return this.state.fetchingRandom ? (
+      <Loading withOverlay={false} />
+    ) : (
       <React.Fragment>
         <TextInput
           hideLabel
